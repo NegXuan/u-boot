@@ -366,6 +366,15 @@
 	"if test ${outputmode2} = ${save_outputmode}; then "\
 		"dovi set;dovi pkg;vpp hdrpkt;"\
 	"fi; "\
+	"if test ${mipi_lcd_exist} = 1; then "\
+		"if test ${panel_type} = mipi_1; then "\
+			"setenv fb_width 1920;"\
+			"setenv fb_height 1200;"\
+		"else "\
+			"setenv fb_width 1080;"\
+			"setenv fb_height 1920;"\
+		"fi;"\
+	"fi; "\
 	"setenv display_layer osd0;osd open;osd clear;"\
 	"run load_bmp_logo;bmp scale;vout output ${outputmode};"\
 	"if test ${outputmode} = ${save_outputmode}; then "\
@@ -389,6 +398,15 @@
 
 /* single logo */
 #define CONFIG_SINGLE_LOGO \
+	"if test ${mipi_lcd_exist} = 1; then "\
+		"if test ${panel_type} = mipi_1; then "\
+			"setenv fb_width 1920;"\
+			"setenv fb_height 1200;"\
+		"else "\
+			"setenv fb_width 1080;"\
+			"setenv fb_height 1920;"\
+		"fi;"\
+	"fi; "\
 	"setenv display_layer osd0;osd open;osd clear;"\
 	"run load_bmp_logo;bmp scale;vout output ${outputmode};"\
 	"if test ${outputmode} = ${save_outputmode}; then "\
