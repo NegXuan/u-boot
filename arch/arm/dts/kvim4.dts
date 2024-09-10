@@ -120,6 +120,10 @@
 	/* pinctrl-names = "default"; */
 };
 
+&amhdmitx {
+	enc_idx = <2>; /* value can be 0 or 2 */
+};
+
 /* Wireless SDIO Module */
 &sd_emmc_a {
 	status = "disabled";
@@ -317,10 +321,6 @@
 
 &saradc {
 	status = "okay";
-};
-
-&amhdmitx {
-	enc_idx = <0>; /* value can be 0 or 2 */
 };
 
 &pinctrl_periphs {
