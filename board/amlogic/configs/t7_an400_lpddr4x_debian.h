@@ -94,6 +94,7 @@
 #define CONFIG_EXTRA_HDMI_ENV_SETTINGS \
 	"panel_type=edp_0\0" \
 	"outputmode=1080p60hz\0" \
+    "fdtfile=t7c_a311d2_an400_debian.dtb\0" \
 	"storeargs_hdmitx="\
 		"setenv bootargs ${bootargs} powermode=${powermode} "\
 		"lcd_ctrl=${lcd_ctrl} lcd_debug=${lcd_debug} "\
@@ -144,6 +145,7 @@
 	"kernel_comp_addr_r=0x0d080000\0"\
 	"kernel_comp_size=0x2000000\0"\
 	"pxeuuid=00000000-0000-0000-0000-000000000000\0"\
+	"fdtfile=t7c_a311d2_an400_debian.dtb\0" \
 	"bootfile=\0"\
 	CONFIG_EXTRA_ENV_SETTINGS_BASE \
 	"silent=1\0"\
