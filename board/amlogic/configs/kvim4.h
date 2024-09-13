@@ -81,14 +81,14 @@
 		"\0"
 #else
 #define CONFIG_EXTRA_HDMI_ENV_SETTINGS \
-	"panel_type=vbyone_0\0" \
+	"panel_type=mipi_0\0" \
 	"panel1_type=vbyone_2\0" \
 	"panel2_type=lvds_1\0" \
 	"lcd1_ctrl=0x00000000\0" \
 	"lcd2_ctrl=0x00000000\0" \
 	"dptx0_ctrl=0x00000000\0" \
 	"dptx1_ctrl=0x00000000\0" \
-	"outputmode=panel1\0" \
+	"outputmode=panel\0" \
 	"outputmode2=1080p60hz\0" \
 	"cvbsmode=576cvbs\0" \
 	"dptx0_ctrl=0x00000000\0" \
