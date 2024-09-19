@@ -186,6 +186,8 @@ obj-$(CONFIG_CMD_SARADC) += saradc.o
 obj-$(CONFIG_CMD_STARTDSP) += cmd_startdsp.o
 obj-$(CONFIG_CMD_REMAPSET) += cmd_remapset.o
 obj-$(CONFIG_CMD_IR) += irkey.o
+obj-$(CONFIG_CMD_KHADAS_KBI) += kbi.o
+
 # Power
 obj-$(CONFIG_CMD_PMIC) += pmic.o
 obj-$(CONFIG_CMD_REGULATOR) += regulator.o

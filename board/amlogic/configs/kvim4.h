@@ -301,6 +301,19 @@
 		"load_bmp_logo="\
 			"run load_bmp_logo_base;"\
 			"\0"\
+		 "wol_init="\
+            "kbi powerstate;"\
+            "kbi trigger wol r;"\
+            "if test ${wol_enable} = 1; then "\
+                "kbi trigger wol w 1;"\
+            "fi;"\
+            "setenv bootargs ${bootargs} wol_enable=${wol_enable};"\
+            "if test ${power_state} = 1; then "\
+                "kbi poweroff;"\
+            "else "\
+                "kbi wolreset;"\
+            "fi;"\
+			"\0"\
 		"init_display="\
 			"run init_display_hdmitx;"\
 			"\0"\
@@ -353,10 +366,10 @@
             "run upgrade_check;"\
             "run check_display;"\
             "run storeargs;"\
-            "run upgrade_key;" \
-            "bcb uboot-command;" \
-            "run switch_bootmode;" \
-            "run reset_suspend;"
+            "run wol_init;"\
+            "run reset_suspend;"\
+            "run upgrade_key;"\
+            "run switch_bootmode;"
 
 #ifndef CONFIG_HDMITX_ONLY
 /* dual logo, normal boot */
