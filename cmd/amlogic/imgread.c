@@ -531,6 +531,102 @@ static int do_image_read_dtb_from_rsv(unsigned char* loadaddr)
 	return 0;
 }
 
+#define DEFAULT_LOAD_ENV_ADDR   (0x10000000)
+#define DEFAULT_ENV_FILE_SIZE   (0x800)
+#define DEFAULT_LOAD_DTBO_ADDR  (0x00a00000)
+void do_fdt_overlay(void * fdt)
+{
+	int ret = -1;
+	char env_buf[128] = {'\0'};
+	char * env_addr = env_get("ramdisk_addr_r");
+	//char * file_size = env_get("filesize_s");
+	unsigned long load_env_addr = 0;
+	unsigned long env_size = DEFAULT_ENV_FILE_SIZE;
+	unsigned long uEuv_addr_offset = 0x100;
+
+	printf("enter do_fdt_overlay.\n");
+
+	if (strict_strtoul(env_addr, 16, &load_env_addr) < 0) {
+		printf("Get ramdisk_addr_r failed, set default.\n");
+		load_env_addr = DEFAULT_LOAD_ENV_ADDR;
+	}
+
+	/* load uEnv.txt */
+	memset(env_buf, 0, sizeof(env_buf));
+	snprintf(env_buf, sizeof(env_buf), "load mmc 1:11 0x%lx  /boot/uEnv.txt", load_env_addr+uEuv_addr_offset);
+	printf("cmd:%s\n", env_buf);
+	ret = run_command(env_buf, 0);
+	if (!ret) {
+		memset(env_buf, 0, sizeof(env_buf));
+		snprintf(env_buf, sizeof(env_buf), "env import -t 0x%lx 0x%lx", load_env_addr+uEuv_addr_offset, env_size);
+		printf("cmd:%s\n", env_buf);
+		ret = run_command(env_buf, 0);
+		if (ret) {
+			printf("env import failed\n");
+		}
+	} else {
+		printf("load /boot/uEnv.txt failed\n");
+	}
+
+	/* load dtb.overlay.env */
+	memset(env_buf, 0, sizeof(env_buf));
+	snprintf(env_buf, sizeof(env_buf), "load mmc 1:11 0x%lx  /boot/dtb/amlogic/kvim4.dtb.overlay.env", load_env_addr);
+	printf("cmd:%s\n", env_buf);
+	ret = run_command(env_buf, 0);
+	if (!ret) {
+		memset(env_buf, 0, sizeof(env_buf));
+		snprintf(env_buf, sizeof(env_buf), "env import -t 0x%lx 0x%lx", load_env_addr, env_size);
+		printf("cmd:%s\n", env_buf);
+		ret = run_command(env_buf, 0);
+		if (ret) {
+			printf("env import failed\n");
+		}
+	} else {
+		printf("load /boot/dtb/amlogic/kvim4.dtb.overlay.env failed\n");
+	}
+
+	char * overlays = env_get("fdt_overlays");
+	char * setoverlays = NULL;
+	char * ptr = NULL;  
+	char cmd_buf[128] = {'\0'};
+	char * dtbo_env_addr = env_get("fdtoverlay_addr_r");
+	unsigned long load_dtbo_addr = 0;
+
+	if (strict_strtoul(dtbo_env_addr, 16, &load_dtbo_addr) < 0) {
+		printf("Get dtbo_env_addr failed, set default.\n");
+		load_dtbo_addr = DEFAULT_LOAD_DTBO_ADDR;
+	}
+
+	if (NULL != overlays) {
+		setoverlays = (char *)malloc(strlen(overlays)+1);
+		memset(setoverlays, 0, strlen(overlays)+1);
+		memcpy(setoverlays, overlays, strlen(overlays));
+		if (NULL != setoverlays) {
+			ptr = strtok(setoverlays, " ");
+			while(ptr != NULL){
+				memset(cmd_buf, 0, sizeof(cmd_buf));
+				snprintf(cmd_buf, sizeof(cmd_buf), "load mmc 1:11 0x%lx  /boot/dtb/amlogic/kvim4.dtb.overlays/%s.dtbo", load_dtbo_addr, ptr);
+				printf("cmd:%s\n", cmd_buf);
+				ret = run_command(cmd_buf, 0);
+				if (!ret) {
+					ret = fdt_increase_size(fdt, fdt_totalsize((void *)load_dtbo_addr));
+					if (!ret) {
+						ret = fdt_overlay_apply(fdt, (void *)load_dtbo_addr);
+						if (!ret) {
+							printf("Linux: fdt overlay OK\n");
+						} else {
+							printf("Linux: fdt overlay failed, ret=%d\n", ret);
+						}
+					}
+				}
+				ptr = strtok(NULL, " ");
+			}
+		}
+		free(setoverlays);
+		setoverlays = NULL;
+	}
+}
+
 //imgread dtb boot ${dtb_mem_addr}
 //imgread dtb rsv ${dtb_mem_addr}
 static int do_image_read_dtb(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
@@ -580,6 +676,8 @@ static int do_image_read_dtb(cmd_tbl_t *cmdtp, int flag, int argc, char * const 
         return CMD_RET_FAILURE;
     }
     memmove(loadaddr, (char*)fdtAddr, fdtsz);
+
+	do_fdt_overlay(loadaddr);
 
     return iRet;
 }

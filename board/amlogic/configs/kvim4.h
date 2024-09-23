@@ -108,6 +108,8 @@
 		"\0"
 #endif
 #define CONFIG_EXTRA_ENV_SETTINGS \
+		"fdtoverlay_addr_r=0x00a00000\0"\
+		"ramdisk_addr_r=0x10000000\0"\
 	CONFIG_EXTRA_ENV_SETTINGS_BASE \
         "silent=1\0"\
         "loadaddr_kernel=0x01080000\0"\
