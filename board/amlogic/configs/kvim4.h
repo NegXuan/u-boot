@@ -126,8 +126,8 @@
         "display_width=1920\0" \
         "display_height=1080\0" \
 		"hdmichecksum=0x00000000\0" \
-		"display_bpp=16\0" \
-        "display_color_index=16\0" \
+        "display_bpp=24\0" \
+        "display_color_index=24\0" \
         "display_layer=osd0\0" \
         "display_color_fg=0xffff\0" \
         "display_color_bg=0\0" \
