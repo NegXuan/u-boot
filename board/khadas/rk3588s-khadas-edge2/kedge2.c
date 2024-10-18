@@ -13,6 +13,10 @@
 
 #define TP_I2C_BUS_NUM 6
 
+#define HW_VERSION_ADC_VALUE_TOLERANCE  0x28
+#define HW_VERSION_ADC_VAL_EDGE2_V12    0x56d
+#define HW_VERSION_ADC_VAL_EDGE2_V13    0x807
+
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_USB_DWC3
@@ -24,6 +28,39 @@ static struct dwc3_device dwc3_device_data = {
 	.dis_u2_susphy_quirk = 1,
 	.usb2_phyif_utmi_width = 16,
 };
+
+static int set_hw_version(void)
+{
+	unsigned int val = 0;
+	int ret;
+	struct udevice *dev;
+	int current_channel = 5;
+
+	ret = uclass_get_device_by_name(UCLASS_ADC, "saradc", &dev);
+	if(ret)
+		return ret;
+	udelay(100);
+	ret = adc_start_channel(dev, current_channel);
+	if(ret)
+		return ret;
+	ret = adc_channel_data(dev, current_channel, &val);
+	if(ret)
+		return ret;
+
+	if ((val >= HW_VERSION_ADC_VAL_EDGE2_V12 - HW_VERSION_ADC_VALUE_TOLERANCE) && 
+		(val <= HW_VERSION_ADC_VAL_EDGE2_V12 + HW_VERSION_ADC_VALUE_TOLERANCE)) {
+		env_set("hwver", "EDGE2.V12");
+	} else if ((val >= HW_VERSION_ADC_VAL_EDGE2_V13 - HW_VERSION_ADC_VALUE_TOLERANCE) && 
+			   (val <= HW_VERSION_ADC_VAL_EDGE2_V13 + HW_VERSION_ADC_VALUE_TOLERANCE)) {
+		env_set("hwver", "EDGE2.V13");
+	} else {
+		env_set("hwver", "Unknow");
+	}
+
+	current_channel = -1;
+
+	return 0;
+}
 
 int usb_gadget_handle_interrupts(void)
 {
@@ -101,6 +138,8 @@ int rk_board_init(void)
 	if (val < 50) {
 		run_command("gpio set 105", 1); //pogo_power_enable
 	}
+
+	set_hw_version();
 
 	return 0;
 }
