@@ -83,6 +83,10 @@
 #define BOARD_TYPE_CAPTAIN  3
 #define BOARD_TYPE_UNKNOW   0
 
+#define HW_VERSION_ADC_VALUE_TOLERANCE  0x28
+#define HW_VERSION_ADC_VAL_EDGE2_V12    0x56d
+#define HW_VERSION_ADC_VAL_EDGE2_V13    0x807
+#define HW_VERSION_UNKNOW               0x0
 
 extern int vendor_storage_init(void);
 
@@ -341,6 +345,55 @@ static void get_led_mode(int type)
 	}
 }
 
+static const char *hw_version_str(int hw_ver)
+{
+	switch (hw_ver) {
+		case HW_VERSION_ADC_VAL_EDGE2_V12:
+			return "EDGE2.V12";
+		case HW_VERSION_ADC_VAL_EDGE2_V13:
+			return "EDGE2.V13";
+		default:
+			return "Unknow";
+	}
+}
+
+static int get_hw_version(void)
+{
+	unsigned int val = 0;
+	int hw_ver = 0;
+	int ret;
+	struct udevice *dev;
+	int current_channel = 5;
+
+	ret = uclass_get_device_by_name(UCLASS_ADC, "saradc", &dev);
+	if(ret)
+		return ret;
+	udelay(100);
+	ret = adc_start_channel(dev, current_channel);
+	if(ret)
+		return ret;
+	ret = adc_channel_data(dev, current_channel, &val);
+	if(ret)
+		return ret;
+	printf("SARADC channel(%d) is %d.\n", current_channel, val);
+
+	if ((val >= HW_VERSION_ADC_VAL_EDGE2_V12 - HW_VERSION_ADC_VALUE_TOLERANCE) && 
+		(val <= HW_VERSION_ADC_VAL_EDGE2_V12 + HW_VERSION_ADC_VALUE_TOLERANCE)) {
+		hw_ver = HW_VERSION_ADC_VAL_EDGE2_V12;
+	} else if ((val >= HW_VERSION_ADC_VAL_EDGE2_V13 - HW_VERSION_ADC_VALUE_TOLERANCE) && 
+			   (val <= HW_VERSION_ADC_VAL_EDGE2_V13 + HW_VERSION_ADC_VALUE_TOLERANCE)) {
+		hw_ver = HW_VERSION_ADC_VAL_EDGE2_V13;
+	} else {
+		hw_ver = HW_VERSION_UNKNOW;
+	}
+
+	printf("saradc: 0x%x, hw_ver: 0x%x (%s)\n", val, hw_ver, hw_version_str(hw_ver));
+	env_set("hwver", hw_version_str(hw_ver));
+	current_channel = -1;
+
+	return 0;
+}
+
 static int set_led_mode(int type, char *led, int mode)
 {
 	char cmd[128];
@@ -528,6 +581,11 @@ static int do_kbi_usid(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[
 	return 0;
 }
 
+static int do_kbi_hwver(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+{
+	return get_hw_version();
+}
+
 static int do_kbi_led(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	int ret = 0;
@@ -642,6 +700,7 @@ static cmd_tbl_t cmd_kbi_sub[] = {
 	U_BOOT_CMD_MKENT(init, 1, 1, do_kbi_init, "", ""),
 	U_BOOT_CMD_MKENT(usid, 1, 1, do_kbi_usid, "", ""),
 	U_BOOT_CMD_MKENT(version, 1, 1, do_kbi_version, "", ""),
+	U_BOOT_CMD_MKENT(hwver, 1, 1, do_kbi_hwver, "", ""),
 	U_BOOT_CMD_MKENT(led, 4, 1, do_kbi_led, "", ""),
 	U_BOOT_CMD_MKENT(trigger, 4, 1, do_kbi_trigger, "", ""),
 };
@@ -670,6 +729,7 @@ static char kbi_help_text[] =
 		"\n"
 		"kbi version - read version information\n"
 		"kbi usid - read usid information\n"
+		"kbi hwver - read board hardware version\n"
 		"\n"
 		"kbi led [systemoff|systemon] w [r|g|b|rg|rb|gb|rgb] <off|on|breathe|heartbeat> - set rgb led mode\n"
 		"kbi led [systemoff|systemon] r [r|g|b|rg|rb|gb|rgb] - read rgb led mode\n"
