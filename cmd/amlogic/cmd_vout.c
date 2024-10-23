@@ -40,19 +40,22 @@ static int vout_hdmi_hpd(int hpd_st)
 {
 #ifdef CONFIG_AML_LCD
 	unsigned int mux_sel = VIU_MUX_MAX, venc_sel = VIU_MUX_MAX;
-	char *mode;
+	char *mode, *mipi_lcd_exist;;
 #endif
 	char *hdmimode;
-	char *cvbsmode;
 	char *colorattribute;
 
 #ifdef CONFIG_AML_LCD
+	env_set("outputmode", "panel");
 	mode = env_get("outputmode");
 	mux_sel = aml_lcd_driver_outputmode_check(mode, 0);
 	venc_sel = mux_sel & 0xf;
 	if (venc_sel == VIU_MUX_ENCL) {
 		printf("%s: lcd no need hpd detect\n", __func__);
-		return 0;
+		// free(mode);
+		mipi_lcd_exist = env_get("mipi_lcd_exist");
+		if (0 == strcmp(mipi_lcd_exist, "1"))
+			return 0;
 	}
 #endif
 	/*get hdmi mode and colorattribute from env */
@@ -66,14 +69,12 @@ static int vout_hdmi_hpd(int hpd_st)
 
 	/* if hpd_st high, output mode will be saved on hdmi side */
 	if (!hpd_st) {
-		cvbsmode = env_get("cvbsmode");
-		if (cvbsmode)
-			env_set("outputmode", cvbsmode);
+		env_set("outputmode", hdmimode);
 		env_set("hdmichecksum", "0x00000000");
 		//run_command("saveenv", 0);
 	} else {
 		if (!strstr(env_get("outputmode"), "hz"))
-			env_set("outputmode", "1080p60hz");
+			env_set("outputmode", hdmimode);
 	}
 
 	return 1;
@@ -86,7 +87,6 @@ static int vout2_hdmi_hpd(int hpd_st)
 	char *mode;
 #endif
 	char *hdmimode;
-	char *cvbsmode;
 	char *colorattribute;
 
 #ifdef CONFIG_AML_LCD
@@ -104,16 +104,15 @@ static int vout2_hdmi_hpd(int hpd_st)
 	colorattribute = env_get("colorattribute");
 	if (colorattribute)
 		printf("%s: colorattribute=%s\n", __func__, colorattribute);
+
 	/* if hpd_st high, output mode will be saved on hdmi side */
 	if (!hpd_st) {
-		cvbsmode = env_get("cvbsmode");
-		if (cvbsmode)
-			env_set("outputmode2", cvbsmode);
+		env_set("outputmode2", hdmimode);
 		env_set("hdmichecksum", "0x00000000");
 		//run_command("saveenv", 0);
 	} else {
 		if (!strstr(env_get("outputmode2"), "hz"))
-			env_set("outputmode2", "1080p60hz");
+			env_set("outputmode2", hdmimode);
 	}
 
 	return 0;

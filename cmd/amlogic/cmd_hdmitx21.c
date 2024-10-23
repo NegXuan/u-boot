@@ -11,6 +11,7 @@
 #include <amlogic/clk_measure.h>
 #include <amlogic/media/vout/hdmitx21/hdmitx.h>
 #include <amlogic/media/dv/dolby_vision.h>
+#include <amlogic/edid-decode.h>
 #include <amlogic/media/vout/dsc.h>
 
 static unsigned char edid_raw_buf[512] = {0};
@@ -43,9 +44,14 @@ static void dump_full_edid(const unsigned char *buf)
 	printf("\n");
 }
 
+#define EDID_RETRY_WAITTIME 500
+
 static int do_edid(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 {
 	unsigned char st = 0;
+	unsigned char count = 0;
+	char *mipi_lcd_exist = NULL;
+
 	struct hdmitx_dev *hdev = get_hdmitx21_device();
 
 	if (!hdev) {
@@ -54,10 +60,29 @@ static int do_edid(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 	}
 	memset(edid_raw_buf, 0, ARRAY_SIZE(edid_raw_buf));
 
+READ_EDID:
 	st = hdev->hwop.read_edid(edid_raw_buf);
 
 	if (!st)
 		printf("edid read failed\n");
+	else if (hdev->hwop.get_hpd_state() == 1) {
+		if (-EDID_ERR_RETRY == parse_edid(edid_raw_buf, st, count)) {
+				printf("hdmitx: read edid fails.. retry..\n");
+				mdelay(EDID_RETRY_WAITTIME);
+				count++;
+				goto READ_EDID;
+		}
+
+		/* select best resolution */
+		env_set("hdmimode", select_best_resolution());
+		mipi_lcd_exist = env_get("mipi_lcd_exist");
+		if (0 == strcmp(mipi_lcd_exist, "1")) {
+			// LCD exist,HDMI is outputmode2
+			env_set("outputmode2", env_get("hdmimode"));
+		} else {
+			env_set("outputmode", env_get("hdmimode"));
+		}
+	}
 
 	return st;
 }

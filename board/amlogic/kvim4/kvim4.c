@@ -149,6 +149,11 @@ void board_lcd_detect(void)
 
 	env_set_ulong("mipi_lcd_exist", value);
 	printf("mipi_lcd_exist : %d\n", value);
+
+	if (!value) {
+		run_command("fdt addr ${fdt_addr_r}; fdt resize 65536; fdt set /lcd status disabled; fdt set /lcd1 status disabled; fdt set /lcd2 status disabled", 0);
+	}
+
 }
 #endif /* CONFIG_AML_LCD */
 
