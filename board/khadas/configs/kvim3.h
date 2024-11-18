@@ -36,6 +36,9 @@
 #define CONFIG_CMD_SARADC 1
 #define CONFIG_SARADC_CH  2
 
+/* configs for khadas */
+#define CONFIG_TCA6408 1
+
 //#define CONFIG_AML_PRODUCT_MODE 1 //
 #ifdef CONFIG_AML_PRODUCT_MODE
 #define CONFIG_SILENT_CONSOLE

@@ -4,6 +4,7 @@
 #
 # SPDX-License-Identifier:	GPL-2.0+
 #
+ccflags-y += -Wno-error -Wno-error=int-conversion -Wno-int-conversion
 
 obj-$(CONFIG_ALI152X) += ali512x.o
 obj-$(CONFIG_DS4510)  += ds4510.o
@@ -29,3 +30,4 @@ obj-$(CONFIG_STATUS_LED) += status_led.o
 obj-$(CONFIG_TWL4030_LED) += twl4030_led.o
 obj-$(CONFIG_FSL_IFC) += fsl_ifc.o
 obj-$(CONFIG_AML_LED) += aml_led_pwm.o
+obj-$(CONFIG_TCA6408) += khadas_tca6408.o
