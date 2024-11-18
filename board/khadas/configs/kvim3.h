@@ -38,6 +38,7 @@
 
 /* configs for khadas */
 #define CONFIG_TCA6408 1
+#define CONFIG_POWER_FUSB302 1
 
 //#define CONFIG_AML_PRODUCT_MODE 1 //
 #ifdef CONFIG_AML_PRODUCT_MODE
