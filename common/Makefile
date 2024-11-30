@@ -389,4 +389,6 @@ obj-$(CONFIG_NOVERBOSE_BUILD) += cmd_bl30_print_set.o
 # zircon commands
 obj-$(CONFIG_ZIRCON_BOOT_IMAGE) += cmd_zircon_bootconfig.o
 
+obj-$(CONFIG_KHADAS_KBI) += cmd_kbi.o
+
 CFLAGS_env_embedded.o := -Wa,--no-warn -DENV_CRC=$(shell tools/envcrc 2>/dev/null)
