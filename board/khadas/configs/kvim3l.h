@@ -30,6 +30,7 @@
 
 /* configs for khadas */
 #define CONFIG_TCA6408 1
+#define CONFIG_POWER_FUSB302 1
 
 /* configs for CEC */
 #define CONFIG_CEC_OSD_NAME		"AML_TV"

@@ -49,6 +49,9 @@
 #ifdef CONFIG_TCA6408
 #include <khadas_tca6408.h>
 #endif
+#ifdef CONFIG_POWER_FUSB302
+#include <fusb302.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -747,6 +750,10 @@ int board_late_init(void)
 				}
 		}
 #endif// #ifndef DTB_BIND_KERNEL
+
+#ifdef CONFIG_POWER_FUSB302
+	fusb302_init();
+#endif
 
 		/* load unifykey */
 		run_command("keyunify init 0x1234", 0);
