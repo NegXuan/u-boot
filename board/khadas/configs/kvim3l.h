@@ -28,6 +28,9 @@
 #define CONFIG_VDDEE_INIT_VOLTAGE_SM1	840		// sm1 ac200 VDDEE voltage setting
 #define CONFIG_VDDEE_SLEEP_VOLTAGE	770		// VDDEE suspend voltage
 
+/* configs for khadas */
+#define CONFIG_TCA6408 1
+
 /* configs for CEC */
 #define CONFIG_CEC_OSD_NAME		"AML_TV"
 #define CONFIG_CEC_WAKEUP

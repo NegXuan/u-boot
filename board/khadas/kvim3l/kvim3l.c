@@ -46,6 +46,9 @@
 #include <amlogic/spifc.h>
 #endif
 #include <asm/arch/timer.h>
+#ifdef CONFIG_TCA6408
+#include <khadas_tca6408.h>
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -612,6 +615,9 @@ int board_init(void)
 #endif
 #ifdef CONFIG_SYS_I2C_MESON
 	set_i2c_ao_pinmux();
+#endif
+#ifdef CONFIG_TCA6408
+	tca6408_gpio_init();
 #endif
 
 	return 0;
