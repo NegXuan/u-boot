@@ -188,6 +188,7 @@
 		"androidboot.firstboot=${firstboot} jtag=${jtag}; "\
 	"setenv bootargs ${bootargs} androidboot.hardware=amlogic androidboot.bootloader=${bootloader_version} androidboot.build.expect.baseband=N/A;"\
             "run cmdline_keys;"\
+            "run wol_init;"\
             "\0"\
         "switch_bootmode="\
             "get_rebootmode;"\
@@ -356,6 +357,17 @@
 		"hdmitx hpd;hdmitx get_parse_edid;dovi process;"\
 		"osd dual_logo;dovi set;dovi pkg;vpp hdrpkt;"\
             "fi;fi;"\
+            "\0"\
+        "wol_init="\
+            "kbi init;"\
+            "kbi powerstate;"\
+            "kbi trigger wol r;"\
+            "setenv bootargs ${bootargs} wol_enable=${wol_enable};"\
+            "if test ${power_state} = 1; then "\
+                "kbi poweroff;"\
+            "else "\
+                "kbi wolreset;"\
+            "fi;"\
             "\0"\
         "cmdline_keys="\
             "if keyman init 0x1234; then "\
