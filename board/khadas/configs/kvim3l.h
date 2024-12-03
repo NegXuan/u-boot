@@ -422,6 +422,11 @@
 			"run update;\n" \
 			"fi;fi;" \
 		"fi;\0" \
+    "vim3_check="\
+		"kbi hwver; "\
+		"echo Hardware version: ${hwver};" \
+		"setenv bootargs ${bootargs} hwver=${hwver};"\
+		"\0"\
 
 
 #define CONFIG_PREBOOT  \
@@ -430,6 +435,7 @@
             "run upgrade_check;"\
             "run init_display;"\
             "run storeargs;"\
+            "run vim3_check;" \
             "run upgrade_key;" \
             "forceupdate;" \
             "bcb uboot-command;"\
