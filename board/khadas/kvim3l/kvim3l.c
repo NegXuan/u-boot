@@ -748,8 +748,14 @@ int board_late_init(void)
 	fusb302_init();
 #endif
 
-		/* load unifykey */
-		run_command("keyunify init 0x1234", 0);
+	/*reset RM500Q module*/
+	run_command("gpio set GPIOA_13", 0);//5G reset
+	mdelay(200);
+	run_command("gpio clear GPIOA_13", 0);//5G reset
+	run_command("gpio clear GPIOA_8", 0); //pcie reset-gpio
+
+	/* load unifykey */
+	run_command("keyunify init 0x1234", 0);
 
 #ifdef CONFIG_SM1_AC200_DEBIAN_V1
 	// Set boot source
