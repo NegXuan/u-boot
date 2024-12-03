@@ -780,6 +780,11 @@
 #define CONFIG_CPU_CLK_DEBUG        600
 #endif
 
+//Command line interface
+#define CONFIG_CMDLINE            1
+#define CONFIG_CMDLINE_EDITING    1
+#define CONFIG_AUTO_COMPLETE      1
+
 //support secure boot
 #define CONFIG_AML_SECURE_UBOOT   1
 
