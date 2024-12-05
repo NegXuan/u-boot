@@ -75,6 +75,8 @@
 /* args/envs */
 #define CONFIG_SYS_MAXARGS  64
 #define CONFIG_EXTRA_ENV_SETTINGS \
+	"fdtoverlay_addr_r=0x00a00000\0"\
+	"ramdisk_addr_r=0x10000000\0"\
 	CONFIG_EXTRA_ENV_SETTINGS_BASE \
 	"silent=0\0"\
         "dv_fw_addr=0xa00000\0"\
