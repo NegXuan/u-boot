@@ -625,6 +625,12 @@ config S4_BF201
 	help
 		Select S4 BF201(XXXX) config
 
+config KHADAS_VIM1S
+	bool "KHADAS_VIM1S"
+	select TARGET_KHADAS_VIM1S
+	help
+		Select KHADAS_VIM1S config
+
 endchoice
 
 config TARGET_S4_SKT
@@ -681,6 +687,10 @@ config TARGET_S4_BF201
 
 config TARGET_S4_AP229_S905C3ENG
 	bool "S4 AP229 S905C3ENG board"
+
+config TARGET_KHADAS_VIM1S
+	bool "Khadas VIM1S board"
+	depends on KHADAS_VIM1S
 
 endif
 
@@ -1892,6 +1902,10 @@ source "board/amlogic/t7_an409_ddr4/Kconfig"
 
 if KHADAS_VIM4
 source "board/amlogic/kvim4/Kconfig"
+endif
+
+if KHADAS_VIM1S
+source "board/amlogic/kvim1s/Kconfig"
 endif
 
 if T7_AN400_LPDDR4X
