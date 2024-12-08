@@ -69,6 +69,8 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+int check_ddrsize(void);
+
 static bool get_sda_gpio_level(void)
 {
 	writel(readl(PREG_PAD_GPIO5_EN_N) | (1 << 14), PREG_PAD_GPIO5_EN_N);
@@ -931,6 +933,9 @@ int board_late_init(void)
 	board_set_boot_source();
 #endif
 
+	/* call check_ddrsize() to verify the system's DDR size */
+	check_ddrsize();
+
 	/* reset vout init state */
 	run_command("setenv vout_init disable", 0);
 
@@ -1059,6 +1064,30 @@ int checkhw(char * name)
 	return 0;
 }
 #endif
+
+int check_ddrsize(void)
+{
+    unsigned long ddr_size=0;
+    int i;
+    for (i=0; i<CONFIG_NR_DRAM_BANKS; i++) {
+        ddr_size += gd->bd->bi_dram[i].size;
+    }
+#if defined(CONFIG_SYS_MEM_TOP_HIDE)
+        ddr_size += CONFIG_SYS_MEM_TOP_HIDE;
+#endif
+    switch (ddr_size) {
+    case 0x80000000:
+        setenv("ddr_size", "2"); //2G DDR
+        break;
+    case 0xe0000000:
+        setenv("ddr_size", "4"); //4G DDR
+        break;
+    default:
+        setenv("ddr_size", "0");
+        break;
+    }
+    return 0;
+}
 
 const char * const _env_args_reserve_[] =
 {
