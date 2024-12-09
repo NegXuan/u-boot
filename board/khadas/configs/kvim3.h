@@ -91,6 +91,46 @@
 #define CONFIG_ADC_POWER_KEY_CHAN   2  /*channel range: 0-7*/
 #define CONFIG_ADC_POWER_KEY_VAL    0  /*sample value range: 0-1023*/
 
+//Boot commands
+#define CONFIG_CMD_BOOTI  1
+#define CONFIG_CMD_BOOTD  1
+#define CONFIG_CMD_BOOTM  1
+
+#define CONFIG_SUPPORT_RAW_INITRD  1
+#define CONFIG_MISC_INIT_R  1
+
+#define CONFIG_CMD_USB  1
+#define CONFIG_CMD_MMC  1
+#define CONFIG_CMD_DHCP 1
+#define CONFIG_CMD_PXE  1
+#define CONFIG_MENU  1
+#define CONFIG_DOS_PARTITION 1
+#define CONFIG_ISO_PARTITION 1
+#define CONFIG_AML_PARTITION 1
+#define CONFIG_EFI_PARTITION 1
+#define CONFIG_PTBL_MBR (1)
+
+#define CONFIG_CMD_NET 1
+#define CONFIG_CMD_TFTPBOOT 1
+#define CONFIG_NET_TFTP_VARS 1
+#define CONFIG_CMD_FAT 1
+#define CONFIG_HAVE_BLOCK_DEVICE 1
+
+#ifdef CONFIG_CMD_USB
+#define BOOT_TARGET_DEVICES_USB(func) func(USB, usb, 0)
+#else
+#define BOOT_TARGET_DEVICES_USB(func)
+#endif
+
+#ifndef BOOT_TARGET_DEVICES
+#define BOOT_TARGET_DEVICES(func) \
+    BOOT_TARGET_DEVICES_USB(func) \
+    func(MMC, mmc, 0) \
+    func(MMC, mmc, 1) \
+    func(PXE, pxe, na) \
+    func(DHCP, dhcp, na)
+#endif
+
 /*smc*/
 #define CONFIG_ARM_SMCCC       1
 
@@ -793,8 +833,8 @@
 
 /* Choose One of Ethernet Type */
 #undef CONFIG_ETHERNET_NONE
-#define ETHERNET_INTERNAL_PHY
-#undef ETHERNET_EXTERNAL_PHY
+#define ETHERNET_EXTERNAL_PHY
+#undef ETHERNET_INTERNAL_PHY
 
 #define CONFIG_HIGH_TEMP_COOL 90
 #define CONFIG_AML_KASLR_SEED
