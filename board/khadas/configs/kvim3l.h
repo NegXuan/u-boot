@@ -428,6 +428,12 @@
 		"echo Hardware version: ${hwver};" \
 		"setenv bootargs ${bootargs} hwver=${hwver};"\
 		"\0"\
+	"updateu="\
+        "if tftp 1080000 u-boot.bin; then "\
+            "mmc dev 1;"\
+            "store rom_write 1080000 0 ${filesize}; "\
+        "fi;"\
+        "\0"\
 
 
 #define CONFIG_PREBOOT  \
