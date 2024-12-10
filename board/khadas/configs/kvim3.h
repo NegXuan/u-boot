@@ -437,6 +437,12 @@
 			"run update;\n" \
 			"fi;fi;" \
 		"fi;\0" \
+    "updateu="\
+        "if tftp 1080000 u-boot.bin; then "\
+            "mmc dev 1;"\
+            "store rom_write 1080000 0 ${filesize}; " \
+        "fi;"\
+        "\0" \
 	"vim3_check="\
 		"kbi hwver; "\
 		"echo Hardware version: ${hwver};" \
