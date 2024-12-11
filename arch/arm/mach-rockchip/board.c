@@ -389,6 +389,7 @@ static void cmdline_handle(void)
 	int if_type;
 	int devnum;
 	char lcd_panel_buf[32] = {'\0'};
+	char hw_version_buf[32] = {'\0'};
 
 	param_parse_pubkey_fuse_programmed();
 
@@ -434,6 +435,16 @@ static void cmdline_handle(void)
         snprintf(lcd_panel_buf, sizeof(lcd_panel_buf), "lcd_panel=%s", lcd_panel);
         env_update("bootargs", lcd_panel_buf);
     }
+
+	//Add Hw version
+	char * hw_version = env_get("hwver");
+
+	if (hw_version)
+	{
+		memset(hw_version_buf, 0, sizeof(hw_version_buf));
+		snprintf(hw_version_buf, sizeof(hw_version_buf), "hwver=%s", hw_version);
+		env_update("bootargs", hw_version_buf);
+	}
 }
 
 static void scan_run_cmd(void)
