@@ -84,6 +84,7 @@
 #define BOARD_TYPE_UNKNOW   0
 
 #define HW_VERSION_ADC_VALUE_TOLERANCE  0x28
+#define HW_VERSION_ADC_VAL_EDGE2_V11    0x2b3
 #define HW_VERSION_ADC_VAL_EDGE2_V12    0x56d
 #define HW_VERSION_ADC_VAL_EDGE2_V13    0x807
 #define HW_VERSION_UNKNOW               0x0
@@ -348,6 +349,8 @@ static void get_led_mode(int type)
 static const char *hw_version_str(int hw_ver)
 {
 	switch (hw_ver) {
+		case HW_VERSION_ADC_VAL_EDGE2_V11:
+			return "EDGE2.V11";
 		case HW_VERSION_ADC_VAL_EDGE2_V12:
 			return "EDGE2.V12";
 		case HW_VERSION_ADC_VAL_EDGE2_V13:
@@ -377,7 +380,10 @@ static int get_hw_version(void)
 		return ret;
 	printf("SARADC channel(%d) is %d.\n", current_channel, val);
 
-	if ((val >= HW_VERSION_ADC_VAL_EDGE2_V12 - HW_VERSION_ADC_VALUE_TOLERANCE) && 
+	if ((val >= HW_VERSION_ADC_VAL_EDGE2_V11 - HW_VERSION_ADC_VALUE_TOLERANCE) &&
+		(val <= HW_VERSION_ADC_VAL_EDGE2_V11 + HW_VERSION_ADC_VALUE_TOLERANCE)) {
+		hw_ver = HW_VERSION_ADC_VAL_EDGE2_V11;
+	} else if ((val >= HW_VERSION_ADC_VAL_EDGE2_V12 - HW_VERSION_ADC_VALUE_TOLERANCE) &&
 		(val <= HW_VERSION_ADC_VAL_EDGE2_V12 + HW_VERSION_ADC_VALUE_TOLERANCE)) {
 		hw_ver = HW_VERSION_ADC_VAL_EDGE2_V12;
 	} else if ((val >= HW_VERSION_ADC_VAL_EDGE2_V13 - HW_VERSION_ADC_VALUE_TOLERANCE) && 
