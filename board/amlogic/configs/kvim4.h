@@ -100,6 +100,7 @@
 			"setenv vout2_args vout2=${outputmode2},enable;"\
 		"fi;"\
 		"setenv bootargs ${bootargs} powermode=${powermode} "\
+		"mipi_lcd_exist=${mipi_lcd_exist} "\
 		"lcd_ctrl=${lcd_ctrl} lcd_debug=${lcd_debug} "\
 		"outputmode=${outputmode} hdmitx=${cecconfig},${colorattribute} "\
 		"${vout2_args} panel1_type=${panel1_type} "\
@@ -115,7 +116,7 @@
 #endif
 #define CONFIG_EXTRA_ENV_SETTINGS \
 		"fdtoverlay_addr_r=0x00a00000\0"\
-		"ramdisk_addr_r=0x10000000\0"\
+		"ramdisk_addr_r=0x1200000\0"\
 	CONFIG_EXTRA_ENV_SETTINGS_BASE \
         "silent=1\0"\
         "loadaddr_kernel=0x01080000\0"\

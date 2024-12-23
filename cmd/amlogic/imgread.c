@@ -531,7 +531,7 @@ static int do_image_read_dtb_from_rsv(unsigned char* loadaddr)
 	return 0;
 }
 
-#define DEFAULT_LOAD_ENV_ADDR   (0x10000000)
+#define DEFAULT_LOAD_ENV_ADDR   (0x1200000)
 #define DEFAULT_ENV_FILE_SIZE   (0x800)
 #define DEFAULT_LOAD_DTBO_ADDR  (0x00a00000)
 void do_fdt_overlay(void * fdt)
@@ -540,33 +540,17 @@ void do_fdt_overlay(void * fdt)
 	char env_buf[128] = {'\0'};
 	char * env_addr = env_get("ramdisk_addr_r");
 	//char * file_size = env_get("filesize_s");
-	unsigned long load_env_addr = 0;
+	unsigned long load_env_addr = DEFAULT_LOAD_ENV_ADDR;
 	unsigned long env_size = DEFAULT_ENV_FILE_SIZE;
-	unsigned long uEuv_addr_offset = 0x100;
 	char *dtb_type = NULL;
 
 	printf("enter do_fdt_overlay.\n");
 
-	if (strict_strtoul(env_addr, 16, &load_env_addr) < 0) {
-		printf("Get ramdisk_addr_r failed, set default.\n");
-		load_env_addr = DEFAULT_LOAD_ENV_ADDR;
-	}
-
-	/* load uEnv.txt */
-	memset(env_buf, 0, sizeof(env_buf));
-	snprintf(env_buf, sizeof(env_buf), "load mmc 1:11 0x%lx  /boot/uEnv.txt", load_env_addr+uEuv_addr_offset);
-	printf("cmd:%s\n", env_buf);
-	ret = run_command(env_buf, 0);
-	if (!ret) {
-		memset(env_buf, 0, sizeof(env_buf));
-		snprintf(env_buf, sizeof(env_buf), "env import -t 0x%lx 0x%lx", load_env_addr+uEuv_addr_offset, env_size);
-		printf("cmd:%s\n", env_buf);
-		ret = run_command(env_buf, 0);
-		if (ret) {
-			printf("env import failed\n");
+	if (NULL != env_addr) {
+		if (strict_strtoul(env_addr, 16, &load_env_addr) < 0) {
+			printf("Get ramdisk_addr_r failed, set default.\n");
+			load_env_addr = DEFAULT_LOAD_ENV_ADDR;
 		}
-	} else {
-		printf("load /boot/uEnv.txt failed\n");
 	}
 
 	// Detect the correct dtb.overlay.env. Add new board here!!!
@@ -603,11 +587,13 @@ void do_fdt_overlay(void * fdt)
 	char * ptr = NULL;  
 	char cmd_buf[128] = {'\0'};
 	char * dtbo_env_addr = env_get("fdtoverlay_addr_r");
-	unsigned long load_dtbo_addr = 0;
+	unsigned long load_dtbo_addr = DEFAULT_LOAD_DTBO_ADDR;
 
-	if (strict_strtoul(dtbo_env_addr, 16, &load_dtbo_addr) < 0) {
-		printf("Get dtbo_env_addr failed, set default.\n");
-		load_dtbo_addr = DEFAULT_LOAD_DTBO_ADDR;
+	if (NULL != dtbo_env_addr) {
+		if (strict_strtoul(dtbo_env_addr, 16, &load_dtbo_addr) < 0) {
+			printf("Get dtbo_env_addr failed, set default.\n");
+			load_dtbo_addr = DEFAULT_LOAD_DTBO_ADDR;
+		}
 	}
 
 	if (NULL != overlays) {
